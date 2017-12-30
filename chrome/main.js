@@ -39,7 +39,6 @@ function before (details) {
     }
     content = encoder.encode(content);
     filter.write(content);
-    filter.disconnect();
   };
 }
 
