@@ -8,14 +8,20 @@ const EMPTY_SCRIPT = '// __CENSORED__';
 async function main () {
   await browser.webRequest.handlerBehaviorChanged();
 
-  browser.webRequest.onBeforeRequest.addListener(before, {
+  browser.webRequest.onHeadersReceived.addListener(before, {
     urls: ['<all_urls>'],
     types: REQUEST_FILTERS,
-  }, ['blocking']);
+  }, [
+    'responseHeaders',
+    'blocking',
+  ]);
 }
 
 
 function before (details) {
+  if (!isHTML(details.responseHeaders)) {
+    return;
+  }
   let isScript = details.type === 'script';
   let filter = browser.webRequest.filterResponseData(details.requestId);
   // TODO maybe not UTF-8
@@ -35,6 +41,17 @@ function before (details) {
     filter.write(content);
     filter.disconnect();
   };
+}
+
+
+function isHTML (headers) {
+  for (let header of headers) {
+    if (header.name.toLowerCase() !== 'content-type') {
+      continue;
+    }
+    return header.value === 'text/html';
+  }
+  return false;
 }
 
 
