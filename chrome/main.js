@@ -51,7 +51,7 @@ function filterDocument (usDocument) {
   let parser = new DOMParser();
   let doc = parser.parseFromString(usDocument, 'text/html');
   let scripts = doc.querySelectorAll('script');
-  for (script of scripts) {
+  for (let script of scripts) {
     script.textContent = filterScript(script.textContent);
   }
   return '<!DOCTYPE html>' + doc.documentElement.outerHTML;
